@@ -1,0 +1,1253 @@
+Install MySQL in ubuntu:
+------------------------
+
+ -> sudo apt-get install mysql-server
+
+create mysql user;
+----------------
+create user 'username' identified by 'password';
+  suppose I want to create mysql user,user name as POLARAO,password as pola@1234
+
+ Syntax:
+ ---------
+           create user 'POLARAO' identified by 'pola@1234';
+
+            grant all privileges on *.* to 'POLARAO';
+show list of mysql users;
+-------------------------
+select user from mysql.user;
+
+
+it displays the list of mysql users;
+
+
+Connecting mysql in remote machine:
+----------------------------------
+
+grant all privileges on *.* to 'userName'@'%' identified by 'Password';
+ 
+
+connecting:
+  mysql -u username -ppassword -h hostname
+
+Working :
+-----------
+
+For local machine :
+---------------------
+ 
+mysql> create user 'localuser' identified by 'localuser';
+
+mysql> grant all privileges on sam.* to 'localuser'@'192.168.2.24' identified by 'localuser';
+
+here sam is a local machine database name
+here 192.168.2.24 remote machine ifconfig address.
+
+For remote machine:
+--------------------
+
+Firstly we should change sudo vim /etc/mysql/my.conf file
+both local and remote machine bind address is 0.0.0.0
+
+
+Now connecting remote machine using
+
+mysql -u localuser -plocaluser -h 198.168.2.43
+
+here 198.168.2.43 is local machine ifconfig address.
+
+*****Successfully done*********
+
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+how to change mysql password:
+------------------------------
+
+open mysql and use update command i.e,
+
+update mysql.user set password=password('newpasswordname') where user='amma';flush priviliges;
+
+============================================================================================================================================
+
+
+Changing mysql root password:
+-----------------------------
+
+      We need to follow the below steps to changing mysql root password i.e,
+ 
+      1.Stop the mysql server. 
+       
+       sudo service mysql stop
+ 
+             (or) 
+
+      sudo /etc/init.d/mysql stop
+ 
+     2.Start the mysqld configuration.
+        
+         sudo mysqld --skip-grant-tables &
+     3.Check where ,mysql ids are more than one,then we killed the mysqld's using kill command.
+
+            ps aux | grep mysqld
+
+            now killing each mysqlid i.e,
+  
+           sudo kill -9 mysqlid
+     4.Login to MySQL as root.
+
+      mysql -u root mysql
+     5. Replace YOURNEWPASSWORD with your new password!
+      
+   UPDATE mysql.user SET Password=PASSWORD('YOURNEWPASSWORD') WHERE User='root'; FLUSH PRIVILEGES; exit;
+
+ now the 'root' password changed successfully....
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+=============================================================================================================================================
+mysql File concept:
+-------------------
+
+   - mysql table data is copied from table to localfile using the folowing command i.e,
+
+select * from tablename into outfile '/tmp/MYSQL.file';
+
+     
+
+ Some important functions in mysql:
+ --------------------------------
+
+1)Create table:
+-----------------
+ create table tablename;
+
+2)insert values into table:
+ --------------------------
+insert into tablename values();
+
+3)update table:
+ -----------------
+update tablename set clause where clause;
+
+4)delete table:(To delete a partcular row in a table);
+ ------------------------------------------------------
+delete from tablename where clause;
+
+5)Drop table:
+-------------
+Delete whole table using,
+
+drop tablename;
+
+6) Alter table:
+ --------------
+
+  a) we may add,modify(change),drop the columns for a particular table;
+  b) Rename the table name;
+
+alter table tablename add columnname varchar(1005);
+  (or) 
+alter table tablename drop columnname;
+  (or)
+alter table tablename change oldcloumnname newcolumnname varchar(102432); 
+  (or)
+alter table tablename rename newtablename;
+
+7)Distinct table;(Duplicate values are removed)
+-----------------
+  select distinct columname from tablename;
+ 
+8)te see the whole table;
+ --------------------------
+
+select * from tablename;
+  (or)
+select particularcolumns from tablename;
+
+9)Describe tablename;(Fileds and types are appered);
+---------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+10)create database(db):
+--------------------------
+
+create database databasename;
+
+11) show databases;
+ 
+12) select databases:
+---------------------
+use databasename;
+13)show tables;
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+14) group by clause:
+   -----------------
+
+   select * from tablename group by columnname;
+
+
+15) order by clause:(Getting asscending or descinding order):
+   ----------------------------------------------------------
+   select * from tablename order by columnname
+     (or)
+   select * from tablename order by columnname desc;
+
+Note:
+-----
+
+     group by clause eliminates the duplicates where as order by prints as an oreder...
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MYSQL_TASK:
+-------------
+Given input:
+-------------
+
+mysql> select * from employee;
++------+---------+--------+
+| date | name    | status |
++------+---------+--------+
+|    8 | polarao | 1      |
+|    8 | siva    | 2      |
+|    8 | simha   | 0      |
+|    8 | chinna  | 1      |
+|    8 | pradeep | 0      |
+|    8 | Ameer   | 2      |
+|    8 | Sudheer | 1      |
+|    8 | praveen | 0      |
+|    8 | charan  | 2      |
+|    8 | rao     | 0      |
+|    8 | hai     | 0      |
+|    8 | hiri    | 2      |
+|    9 | hairaja | 1      |
++------+---------+--------+
+13 rows in set (0.00 sec)
+
+
+Output:
+-------
+
+mysql> select date, sum(case status when 0 then 1 else 0 end) as OFF, sum(case status when 1 then 1 else 0 end) as PRESENT,sum(case status when 2 then 1 else 0 end) as HALF_DAY from employee group by date order by 1 desc; 
++------+------+---------+----------+
+| date | OFF  | PRESENT | HALF_DAY |
++------+------+---------+----------+
+|    9 |    0 |       1 |        0 |
+|    8 |    5 |       3 |        4 |
++------+------+---------+----------+
+2 rows in set (0.00 sec)
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+*************************
+
+JOINS_MYSQL:
+-------------
+
+
+     Combined the tables,
+  
+
+     3 types 
+        |
+        |----> 1) Inner Join
+        | 
+        |----> 2) Left  Join
+        |
+        |----> 3) Right Join
+        |
+        |
+        |  
+       
+1) Inner Join():
+------------------
+
+
+mysql> select * from emp;
++------+-------+------------+------------+
+| id   | name  | pola       | contact    |
++------+-------+------------+------------+
+|    2 | name1 | 200000     | NULL       |
+|    3 | name2 | 300000     | NULL       |
+|    4 | zzz   | 1000000000 | NULL       |
+| 1014 | z.zz  | 90000      | NULL       |
+|    1 | ramu  | 203850     | 8500308820 |
+|  101 | name2 | 94789034   | NULL       |
+|    4 | hai   | 45956      | 852132434  |
++------+-------+------------+------------+
+7 rows in set (0.00 sec)
+
+mysql> select * from student1;
++------+------------+---------+
+| id   | name       | marks   |
++------+------------+---------+
+|    2 | gurunannak |       0 |
+|    4 | nanak      |     443 |
+|   55 | ramu       |     900 |
+|    3 | guru       |     999 |
+|    5 | amma       |    6577 |
+|    2 | hai        | 9000000 |
++------+------------+---------+
+6 rows in set (0.00 sec)
+
+mysql> select emp.name,student1.marks from emp,student1 where emp.name=student1.name;
++------+---------+
+| name | marks   |
++------+---------+
+| ramu |     900 |
+| hai  | 9000000 |
++------+---------+
+2 rows in set (0.00 sec)
+  
+
+            (OR)
+
+
+mysql> select emp.name,student1.marks from emp inner join student1 on emp.name=student1.name;
++------+---------+
+| name | marks   |
++------+---------+
+| ramu |     900 |
+| hai  | 9000000 |
++------+---------+
+2 rows in set (0.00 sec)
+
+
+
+
+2) Left Join():
+-----------------
+ 
+
+mysql> select emp.name,student1.marks from emp left join student1 on emp.name=student1.name;
++-------+---------+
+| name  | marks   |
++-------+---------+
+| ramu  |     900 |
+| name1 |    NULL |
+| name2 |    NULL |
+| hai   | 9000000 |
+| zzz   |    NULL |
+| name2 |    NULL |
+| z.zz  |    NULL |
++-------+---------+
+7 rows in set (0.00 sec)
+
+
+3)Right Join():
+----------------
+
+
+mysql> select emp.name,student1.marks from emp right join student1 on emp.name=student1.name;
++------+---------+
+| name | marks   |
++------+---------+
+| NULL |       0 |
+| NULL |     443 |
+| ramu |     900 |
+| NULL |     999 |
+| NULL |    6577 |
+| hai  | 9000000 |
++------+---------+
+6 rows in set (0.00 sec)
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+**********************************
+
+***VIEWS_MYSQL:
+------------
+mysql> select * from student1;
++------+------------+---------+
+| id   | name       | marks   |
++------+------------+---------+
+|    2 | gurunannak |       0 |
+|    4 | nanak      |     443 |
+|   55 | ramu       |     900 |
+|    3 | guru       |     999 |
+|    5 | amma       |    6577 |
+|    2 | hai        | 9000000 |
++------+------------+---------+
+6 rows in set (0.00 sec)
+
+
+Create view the following syntax:
+--------------------------------
+
+mysql> create view view_pola as select name,marks from student1;	
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> select * from view_pola;
++------------+---------+
+| name       | marks   |
++------------+---------+
+| gurunannak |       0 |
+| nanak      |     443 |
+| ramu       |     900 |
+| guru       |     999 |
+| amma       |    6577 |
+| hai        | 9000000 |
++------------+---------+
+6 rows in set (0.00 sec)
+
+IF you do anything in the corresponding table in mysql the same data can be appered in the view also,
+
+ For example we see the below one,
+   I had inserted the values in the corresponding table student1 tables,
+   
+mysql> insert into student1 values(95,'polapolapola',7676);
+Query OK, 1 row affected (0.09 sec)
+
+mysql> select * from student1;
++------+--------------+---------+
+| id   | name         | marks   |
++------+--------------+---------+
+|    2 | gurunannak   |       0 |
+|    4 | nanak        |     443 |
+|   55 | ramu         |     900 |
+|    3 | guru         |     999 |
+|    5 | amma         |    6577 |
+|   95 | polapolapola |    7676 |
+|    2 | hai          | 9000000 |
++------+--------------+---------+
+7 rows in set (0.00 sec)
+
+mysql> select * from view_pola;
++--------------+---------+
+| name         | marks   |
++--------------+---------+
+| gurunannak   |       0 |
+| nanak        |     443 |
+| ramu         |     900 |
+| guru         |     999 |
+| amma         |    6577 |
+| polapolapola |    7676 |
+| hai          | 9000000 |
++--------------+---------+
+7 rows in set (0.00 sec)
+
+mysql> show tables;
++------------------------+
+| Tables_in_poladatabase |
++------------------------+
+| emp                    |
+| emp2                   |
+| pola                   |
+| pola_view              |
+| student1               |
+| view_pola              |
++------------------------+
+6 rows in set (0.00 sec)
+
+
+ NOTE: 
+
+    I want to delete the view and I followed the foloowing syntax
+   
+
+ drop view viewname;
+
+mysql> drop view pola_view;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> show tables;
++------------------------+
+| Tables_in_poladatabase |
++------------------------+
+| emp                    |
+| emp2                   |
+| pola                   |
+| student1               |
+| view_pola              |
++------------------------+
+5 rows in set (0.00 sec)
+
+
+View has been dropped I mean deleted.
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ 
+***********************************************
+***********************************************
+***********************************************
+
+KEYS_MYSQL:
+------------
+       
+        2 types of keys in mysql i,e
+
+
+   1. primary key doesnot take duplicate values
+   2. where as foreign key referrences to the other table(we are using the same properties of the table1) 
+
+    
+             |
+             |-----------> 1)Primary key 
+             | 
+             | 
+             |-----------> 2)Foreign key
+
+
+1) create table siva(id int Primary key,name varchar(33),addess varchar(10));
+
+Query OK, 0 rows affected (0.12 sec)
+
+mysql> insert into siva values(1,'hai','hyder');
+Query OK, 1 row affected (0.07 sec)
+
+mysql> insert into siva values(1,'gjkfhai','hgryder');
+ERROR 1062 (23000): Duplicate entry '1' for key 'PRIMARY'
+mysql> insert into siva values(2,'gjkfhai','hgryder');
+Query OK, 1 row affected (0.03 sec)
+
+mysql> insert into siva values(4,'gjkfhai','hgryder');
+Query OK, 1 row affected (0.11 sec)
+
+
+mysql> select * from siva;
++----+---------+---------+
+| id | name    | addess  |
++----+---------+---------+
+|  1 | hai     | hyder   |
+|  2 | gjkfhai | hgryder |
+|  4 | gjkfhai | hgryder |
++----+---------+---------+
+3 rows in set (0.00 sec)
+
+Created another table called simha1:
+-----------------------------------
+
+mysql> create table simha1(id int,name varchar(30),foreign key(id) references siva(id));
+Query OK, 0 rows affected (0.19 sec)
+
+mysql> insert into simha1 values(2,'giving');
+Query OK, 1 row affected (0.07 sec)
+
+mysql> select * from simha1;
++------+--------+
+| id   | name   |
++------+--------+
+|    2 | giving |
++------+--------+
+1 row in set (0.00 sec)
+
+mysql> insert into simha1 values(4,'giving');
+Query OK, 1 row affected (0.05 sec)
+
+mysql> insert into simha1 values(5,'giving');
+ERROR 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`poladatabase`.`simha1`, CONSTRAINT `simha1_ibfk_1` FOREIGN KEY (`id`) REFERENCES `siva` (`id`))
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------             
+
+=================================================================================================================================================================
+
+
+MYSQL Queeries:
+---------------
+
+   1 .Connecting databases from  remotehosts to local machine:    
+      -------------------------------------------------------
+
+                           (Hostname)
+                              |
+     1> CREATE USER 'pola'@'host' IDENTIFIED BY 'admin';
+                       |                           |
+                    (mysql user)               (Mysql password)
+ 
+
+ 
+
+
+                                               (Hostname or System IP)
+                                                   |
+    2> GRANT ALL PRIVILEGES ON *.* TO 'pola'@'183.82.119.78';
+                                          |
+                                      (Mysql user)
+
+
+
+Firstoff all we have to change the following synatx
+
+  Go Through the cd /etc/mysql/my.cnf file
+      
+
+ In my.cnf file we have to change the bind address to 0.0.0.0 
+=================================================================================================================================================================                          
+
+
+
+Dump and restoring(updating data) in mysql:
+--------------------------------------------
+1.Particular database:
+----------------------
+    a) Dumping data(Backup):
+       ---------------------
+
+                           mysqldump -u username -p password databasename > filename(file.txt)
+
+   b) Updating(Restoring data):
+      --------------------------
+ 
+                            mysql -u username -p password databasename < filename(file.txt)
+
+
+2.Particular table:
+-------------------
+
+ a) Dumping data(Backup):
+       ---------------------
+
+                           mysqldump -u username -p password databasename tablename > filename(file.txt)
+
+   b) Updating(Restoring data):
+      --------------------------
+ 
+                            mysql -u username -p password databasename  tablename < filename(file.txt)
+
+
+
+3.All databases:
+-------------------
+
+ a) Dumping data(Backup):
+       ---------------------
+
+                           mysqldump -u username -p password --all-databases > filename(file.txt)
+
+   b) Updating(Restoring data):
+      --------------------------
+ 
+                            mysql -u username -p password databasename  --all-databases  < filename(file.txt)
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+To Change MySql password using the following command:
+------------------------------------------------------------
+
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY '%password%' WITH GRANT OPTION;
+                                                                    |
+                                                               Instead of password we may change your own password.
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+1.copy the table data from one to another table:
+-----------------------------------------------l
+
+create table employee select * from student;
+
+------------------------------------------------------------------------------------------------------------------------------------------
+MYSQL Clauses:
+--------------
+                     The Following shows the mysql classes(conditions) i.e,
+ 
+
+                  1.group by
+                  2.order by
+                  3.having 
+                  4.distinct
+                  5.where 
+                  6.from
+                                   
+Group by and order by:
+---------------------
+
+1.group by :
+-----------
+            'Group by' eliminates the duplicate values as per the given order(I mean ascending or descending order).
+2.order by:
+ ------------
+                  It prints original as well as duplicate values.as per the given order.
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+MySql Conditions:
+---------------
+
+      1.Null and Not null
+      2.And or
+      3.Like 
+      4.In,not in,between.
+
+*** Practice www.mysqltpoint.com examples-----------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+CSV FILE-TO-MYSQL-DATABASE:
+--------------------------
+
+how-to-import-csv-file-to-mysql-table:
+-------------------------------------
+
+firstly we have to create csv file into your local machine
+
+filename.csv:
+--------
+a,b,c,d
+1,2,3,4
+5,6,7,8
+9,10,11,12
+13,14,15,16
+17,18,19,20
+
+now we will open msyql and create one sample table (csvtable) with same columns (like same as local csv file columns a,b,c,d)
+
+Now we run the folowing command in mysql
+
+load data local infile '/tmp/csvfile.csv' into table csvtable fields terminated by ',' enclosed by '' lines terminated by '\n' IGNORE 1 LINES (a,b,c,d);
+
+now the same data is shown in mysql database with tabler form 
+
+select * from csvtable;
++------+------+------+------+
+| a    | b    | c    | d    |
++------+------+------+------+
+| 1    | 2    | 3    | 4    |
+| 5    | 6    | 7    | 8    |
+| 9    | 10   | 11   | 12   |
+| 13   | 14   | 15   | 16   |
+| 17   | 18   | 19   | 20   |
++------+------+------+------+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+mysql File concept:
+-------------------
+
+   - mysql table data is copied from table to localfile using the folowing command i.e,
+
+select * from tablename into outfile '/tmp/MYSQL.file';
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Important:
+----------
+1.Mysql database is stored in "myisam" storage engine..which is located as cd /var/lib/mysql
+
+
+to go through mysql we should give the permissions like
+
+chmod 755 mysql
+
+------------------------------------------------------------------------------
+
+ENCRYPTION AND DECRYPTION OF MYSQL TABLE DATA:
+-----------------------------------------------
+
+aes-256-cbc Encryption:
+-------------------------
+
+1.create table encryptiontable(id int,name varchar(20));
+table created
+
+I want to encrypt name in table.
+
+so we use the folowing command,
+
+2.INSERT INTO encryptiontable(id,name) VALUES(1,AES_ENCRYPT('siva','passwordgiven'));
+The values are inserted.
+
+The name had encrypted.
+
+3.select name,AES_DECRYPT(name,'passwordgiven') from encryptiontable;
+
+The data has decrypted..
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+Create temporary table in mysql:
+-------------------------------
+
+1.create temporary table employee(id int);
+
+created employee table.
+
+2.insert into employee values(1);
+ 
+now select * from employee;
+
+shows the data.
+
+
+When we quit the mysql session.and opened after a few minutes 
+
+the temporary table has expired..it means it does't opened.(The table doesn't exist).
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+DataBase ENGINES:
+-------------------
+
+mysql engine - MyISAM(default engine of mysql).
+InnoDb
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------
+
+DATA Types in Mysql;
+-------------------
+
+1.date
+2.time
+3.timestamp
+
+1.date:
+--------
+- create table datetable(date date);
+table created.
+
+- insert into datetable values('2017-07-28');
+
+- select * from datetable;
+  2017-07-28
+
+note:
+------
+
+to know the current date we may use now() method.
+
+- insert into datetable values(now());
+
+2.time:
+------
+
+create table timetable(time time);
+table created.
+
+- insert into timetable values('10:23:25');
+
+- select * from timetable;
+  10:23:25
+
+note:
+------
+
+to know the current time we may use now() method.
+
+- insert into timetable values(now());
+
+3.timestamp:
+-----------
+
+
+create table timestamptable(time timestamp);
+table created.
+
+- insert into timestamptable values('2017-06-07 10:23:25');
+
+- select * from timestamptable;
+2017-06-07 10:23:25
+
+note:
+------
+
+to know the current time we may use now() method.
+
+- insert into timestamptable values(now());
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+clone table(copy table):
+----------------------
+                
+
+create table newtable select * from emlooyee;
+
+created newtable which as employee data.
+----------------------------------------------------------------------------------------------------------------------------------------------
+
+Indexes:
+-------
+
+create index:
+-------------
+create index indexname on tablename(columnname);
+
+index has created.
+
+create unique index:
+-------------------
+create unique index indexname on tablename(columnname);
+
+unique index has created.
+
+Drop index and unique indexes:
+------------------------------
+
+DROP INDEX indexname ON tablename;
+
+=====================================================================================================================================================
+
+MySQL RegularExpretions:
+------------------------ 
+Noramally we are searching with regular expressions
+ie.
+
+select * from emp where name regexp 'polarasssss'
+
+1.Beginning of string(^):
+Starts with p realated values:
+select * from emp where name regexp '^p'
+
+2.End of the given string($):
+select * from emp where name regexp '$p'
+
+3.To search begining and endoing then we use pipe symbol (both ^|$)
+
+select * from emp where name regexp '^p|a$'
+
+-------------------------------------------------------------------------------------------------------------------------------
+
+Backticks in mysql(` `):
+-----------------------
+
+using 'mysql reserved' keywords then it shows the warning message.
+
+Hence,if you use backticks then it does't show the warning message.
+
+reserved words are:
+group,add.table.database etc...
+
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+DDL,DML,DCL,TCL Languages in mysql:
+-------------------------------
+https://www.w3schools.in/mysql/ddl-dml-dcl/
+
+
+
+1)DDL: Data Definition Language
+
+   The Folowing Commands are DDL Commands
+      create,alter,drop,truncate,rename and comment
+
+2) DML: Data Manipulation Language 
+
+    select,insert,update and delete
+
+3)DCL: Data Control Language
+
+    The Folowing commands are DCL 
+
+        grant and revoke
+
+4) TCL: Transcation Control Language
+
+   commit,rollback,savepoint
+
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+** Connecting mysql to other languages :
+
+1) Connecting Mysql to Python using -> Mysqldb(localhost,userName,password,databaseName)
+2) Connecting Mysql to PHP using -> Mysqli_connect(localhost,userName,password,databaseName)
+3) Connecting Mysql to Java using -> JDBC
+===============================================================================================================================================
+**important Mysql Links :
+------------------------
+
+1) https://www.w3schools.in/mysql/
+2) https://stackoverflow.com/documentation/mysql/topics.
+3) http://www.liquidweb.com/kb/create-a-mysql-user-on-linux-via-comma
+4) https://www.w3schools.in/wordpress-tutorial/install/
+------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+=============================================================================================================================================
+
+MONGODB Documentation:(port number:27017)
+---------------------
+
+*Database Creation:
+ -----------------
+
+         use databasename;
+
+ex:
+      use pola;
+
+pola database is created.
+
+* Show list of databases:
+  -------------------------
+
+show dbs;
+
+Dhanush     0.078GB
+Mohit       0.078GB
+amma        0.078GB
+local       0.078GB
+
+here local database is default database in MongoDb.
+ 
+drop database:
+-------------
+ use databaseName;
+Then drop the database using the folowing command,   
+
+db.dropDatabase();
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+* Collection Creation(collection means table):
+  ------------------------------------------
+
+db.createCollection(collectionName);
+ 
+  (or)
+
+When you inserting data into database @ Collection has been creating automatically.
+
+  ie.
+
+
+db.collectionName.insert({"id":1,"name":"Pola"});
+
+* show list of collections:
+ ------------------------
+
+show collections
+
+* Updating documents(columns) in mongodb:
+-----------------------------------------
+
+I Want to update the value in particular collection Then, we should use the folowing command i.e
+ 
+db.collectionName.update({"id":1},{$set.{"id":2}});
+db.collectionName.update({"id":1},{set.{"id":2}})
+
+* Removing documents in database:
+----------------------------------
+
+db.CollectionName.drop(); 
+
+If It shows 'true' when database droped successfully
+If It shows false' when database droped Unsuccessfully
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+Mongo Backup:
+-------------
+Type mongodump in CLI(command Line interface) i.e,
+
+mongodump 
+
+All database are dumpled here...By default it sores as "dump" directory
+ 
+Retrive backup data:
+--------------------
+
+mongorestore
+
+Note;
+-------
+1.To dump particular database type in mongodb we should use "-d" option.
+
+i.e
+
+mongodump -d databaseName
+
+2.To retrive backend data using,
+
+mongorestore -d databaseName
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Connecting mongodb in python(Through python script):
+----------------------------------------------------
+
+The following script shows the how to connecting mongodb 
+
+i.e
+
+
+
+from pymongo import MongoClient
+client = MongoClient('localhost', 27017)
+
+#
+
+For creating mongodb
+db = client.googledrive
+print db
+
+#For creating database collection
+collection = db.gd
+print collection
+
+# For inserting data into document
+insert=db.collection.insert({"id":1}) 
+print insert
+
+# For drop the database
+client.drop_database("database name which is already in mongodb")
+
+
+--------------------------------------------------------------
+
+Mongodb service:
+----------------
+
+ 1> To check the status of mongodb
+  sudo service mongod status
+ 2> To start mongodb
+   sudo service mongod start/restart
+ 3> stop mongodb service
+   sudo service mongod stop
+
+Note:
+* Mongod is the primary daemon process for the MongoDB system. It handles data requests, manages data access, and performs background management operations.
+
+
+To drop database Permentally,we have to go for 
+
+
+ cd /var/lib/mongod
+
+mongod shows the all databases 
+
+suppose we want to delete database,we should give the permissions like
+
+chmod 777 databaseName
+
+Now we use 'rm -rf' command to delete the database as per our requeriments.
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+MY SQL Functions:
+-----------------
+
+1.Aggragrate Functions
+2.trim Function:
+  --------------
+
+     select trim(columnName) from tableName;
+      eg:
+             select trim(name) from emp;
+
+Note:
+      removes leading and trailing spaces for the given data.
+
+3.Replace Function:
+ ------------------
+
+   select replace(name,' ', '') from emp;
+
+eg:
+         Replace oldData to newData
+
+4.analyze function:
+ -------------------
+
+  analyze table emp; 
+
+    show the data like,
+                  
++-------------------+---------+----------+----------+
+| Table             | Op      | Msg_type | Msg_text |
++-------------------+---------+----------+----------+
+| PRACTICE.customer | analyze | status   | OK       |
++-------------------+---------+----------+----------+
+ 
+5. Check Function:
+  ----------------
++-------------------+-------+----------+----------+
+| Table             | Op    | Msg_type | Msg_text |
++-------------------+-------+----------+----------+
+| PRACTICE.customer | check | status   | OK       |
++-------------------+-------+----------+----------+
+1 row in set (0.00 sec)
+
+
+6.optimize Function:
+  ------------------
+
+-------------------+----------+----------+-------------------------------------------------------------------+
+| Table             | Op       | Msg_type | Msg_text                                                          |
++-------------------+----------+----------+-------------------------------------------------------------------+
+| PRACTICE.customer | optimize | note     | Table does not support optimize, doing recreate + analyze instead |
+| PRACTICE.customer | optimize | status   | OK                                                                |
++-------------------+----------+----------+-------------------------------------------------------------------+
+2 rows in set (0.82 sec)
+
+
+7.Repair Function:
+  ----------------
+
++-------------------+--------+----------+---------------------------------------------------------+
+| Table             | Op     | Msg_type | Msg_text                                                |
++-------------------+--------+----------+---------------------------------------------------------+
+| PRACTICE.customer | repair | note     | The storage engine for the table doesn't support repair |
++-------------------+--------+----------+---------------------------------------------------------+
+1 row in set (0.00 sec)
+
+8.http://www.mysqltutorial.org/mysql-curdate/
+
+9. select now();
+    (or)
+    select sysdate();
+
+Both are displayed same result like,
+
+        mysql>  SELECT SYSDATE(), 
+               NOW();
++---------------------+---------------------+
+| SYSDATE()           | NOW()               |
++---------------------+---------------------+
+| 2017-07-13 17:46:30 | 2017-07-13 17:46:30 |
++---------------------+---------------------+
+1 row in set (0.00 sec)
+
+10.select curdate();
+      (or)
+  select current_date();
+      (or)
+        select curremt_date;
+   
+The result has same i.e,
+
+----------------+
+| current_date() |
++----------------+
+| 2017-08-31     |
++----------------+
+
+
+--------------------------------------------------------------------------------------------------------
+skype Installation in ubutnu latest version:
+-------------------------------------------
+
+Step 1 – Download Skype Debian Package:
+----------------------------------------
+
+wget https://repo.skype.com/latest/skypeforlinux-64.deb
+
+Step 2 – Install Skype:
+------------------------
+
+sudo dpkg -i skypeforlinux-64.deb
+
+sudo apt-get install -f
+
+Step 3 – Launch Skype:
+---------------------
+
+skypeforlinux
